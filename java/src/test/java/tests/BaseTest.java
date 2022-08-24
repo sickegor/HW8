@@ -1,12 +1,15 @@
 package tests;
 
+import com.codeborne.selenide.CollectionCondition;
 import com.codeborne.selenide.Configuration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 import static com.codeborne.selenide.Condition.text;
@@ -37,14 +40,26 @@ public class BaseTest {
         $("strong").shouldHave(text("Мы отключили возможность входа с помощью адреса электронной почты."));
     }
 
+
+    @ValueSource(strings = {"asdw@nail.com"})
+    @ParameterizedTest(name = "Авторизация под пользаком \"{0}\"")
+    void fillFormTwitchValueSource(String login) {
+        $("button[data-a-target = login-button]").click();
+        $("#login-username").setValue(login);
+        $("#password-input").setValue("password");
+        $("button[data-a-target = passport-login-button]").click();
+        $("strong").shouldHave(text("Мы отключили возможность входа с помощью адреса электронной почты."));
+    }
+
     static Stream<Arguments> checkButtonTwitch(){
         return Stream.of(
-                Arguments.of("Войти", "Регистрация")
+                Arguments.of("[data-a-target = user-card]", List.of("Войти", "Регистрация")),
+                Arguments.of("[data-a-target = browse-link]", List.of("Просмотр"))
         );
     }
     @MethodSource("checkButtonTwitch")
     @ParameterizedTest
-    void checkButtonTwitch(String nameButton) {
-        $("[data-a-target = user-card]").shouldHave(text(nameButton));
+    void checkButtonTwitch(String place, List<String> nameButton) {
+        $$(place).shouldHave(CollectionCondition.texts(nameButton));
     }
 }
