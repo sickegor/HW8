@@ -17,8 +17,6 @@ import static com.codeborne.selenide.Selenide.*;
 
 public class BaseTest {
 
-    @CsvSource(value = "chrome")
-    @ParameterizedTest(name = "Открытие браузера \"{0}\"")
     @BeforeEach
     void openPage() {
         Configuration.browser = "chrome";
